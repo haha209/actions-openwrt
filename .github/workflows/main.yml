@@ -39,26 +39,9 @@ jobs:
     - name: feeds前操作
       run: |
         cd openwrt
-        rm -rf ./package/lean/luci-theme-argon
-        git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git ./package/lean/luci-theme-argon
-        git clone https://github.com/jerrykuku/luci-app-argon-config ./package/lean/luci-app-argon-config
-        sed -i '$a src-git openclash https://github.com/vernesong/OpenClash' feeds.conf.default
-        git clone -b other https://github.com/Lienol/openwrt-package.git ./openwrt-package
-        cp -r ./openwrt-package/luci-app-adguardhome ./package/lean/luci-app-adguardhome
-        rm -rf ./openwrt-package
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
-
-    - name: feeds中操作
-      run: |
-        cd openwrt
-        git clone https://github.com/messense/aliyundrive-fuse ./aliyundrive-fuse
-        rm -rf ./feeds/packages/multimedia/aliyundrive-fuse
-        cp -r ./aliyundrive-fuse/openwrt/aliyundrive-fuse ./feeds/packages/multimedia/aliyundrive-fuse
-        rm -rf ./feeds/luci/luci-app-aliyundrive-fuse
-        cp -r ./aliyundrive-fuse/openwrt/luci-app-aliyundrive-fuse ./feeds/luci/luci-app-aliyundrive-fuse
-        rm -rf ./aliyundrive-fuse
 
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
@@ -66,6 +49,49 @@ jobs:
     - name: feeds后操作
       run: |
         cd openwrt
+
+        rm -rf feeds/luci/themes/luci-theme-argon
+        rm -rf feeds/luci/applications/luci-app-dockerman
+        rm -rf feeds/packages/multimedia/aliyundrive-fuse
+        rm -rf feeds/luci/applications/luci-app-aliyundrive-fuse
+
+        git clone https://github.com/kongfl888/luci-app-adguardhome.git package/luci-app-adguardhome
+        git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
+        git clone https://github.com/jerrykuku/luci-app-argon-config package/luci-app-argon-config
+        svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman package/luci-app-dockerman
+        svn co https://github.com/messense/aliyundrive-fuse/trunk/openwrt/aliyundrive-fuse feeds/packages/multimedia/aliyundrive-fuse
+        svn co https://github.com/messense/aliyundrive-fuse/trunk/openwrt/luci-app-aliyundrive-fuse feeds/luci/applications/luci-app-aliyundrive-fuse
+
+        svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash package/luci-app-openclash
+        # 编译 po2lmo (如果有po2lmo可跳过)
+        pushd package/luci-app-openclash/tools/po2lmo
+        make && sudo make install
+        popd
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/brook package/brook
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/chinadns-ng package/chinadns-ng
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/tcping package/tcping
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/trojan-go package/trojan-go
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/trojan-plus package/trojan-plus
+        svn co https://github.com/xiaorouji/openwrt-passwall/branches/luci/luci-app-passwall package/luci-app-passwall
+        svn co https://github.com/xiaorouji/openwrt-passwall2/trunk/luci-app-passwall2 package/luci-app-passwall2
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/xray-core package/xray-core
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/xray-plugin package/xray-plugin
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/ssocks package/ssocks
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/hysteria package/hysteria
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/v2ray-plugin package/v2ray-plugin
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/v2ray-core package/v2ray-core
+        svn co https://github.com/xiaorouji/openwrt-passwall/trunk/dns2tcp package/dns2tcp
+        svn co https://github.com/fw876/helloworld/trunk/v2ray-geodata package/v2ray-geodata
+        svn co https://github.com/fw876/helloworld/trunk/naiveproxy package/naiveproxy
+        svn co https://github.com/fw876/helloworld/trunk/sagernet-core package/sagernet-core
+        svn co https://github.com/fw876/helloworld/trunk/shadowsocks-rust package/shadowsocks-rust
+        svn co https://github.com/fw876/helloworld/trunk/shadowsocksr-libev package/shadowsocksr-libev
+        svn co https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus package/luci-app-ssr-plus
+        svn co https://github.com/fw876/helloworld/trunk/simple-obfs package/simple-obfs
+        svn co https://github.com/fw876/helloworld/trunk/trojan package/trojan
+
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
 
     - name: 下载包文件
       run: |
