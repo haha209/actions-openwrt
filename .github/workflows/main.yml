@@ -39,6 +39,10 @@ jobs:
     - name: feeds前操作
       run: |
         cd openwrt
+        # sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
+        # echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
+        # echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
+        # sed -i '$a src-git openclash https://github.com/vernesong/OpenClash' feeds.conf.default
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -49,6 +53,8 @@ jobs:
     - name: feeds后操作
       run: |
         cd openwrt
+
+        sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate
 
         rm -rf feeds/luci/themes/luci-theme-argon
         rm -rf feeds/luci/applications/luci-app-dockerman
